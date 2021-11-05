@@ -12,5 +12,7 @@ jobs:
       - name: Hello world action step
         uses: ./ # Uses an action in the root directory
         id: hello
+        env:
+          SHIPA_TOKEN: ${{ secrets.SHIPA_TOKEN }}
         with:
           file-path: 'action.yml'
