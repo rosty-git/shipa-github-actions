@@ -14,5 +14,6 @@ jobs:
         id: hello
         env:
           SHIPA_TOKEN: ${{ secrets.SHIPA_TOKEN }}
+          SHIPA_HOST: ${{ secrets.SHIPA_HOST }}
         with:
           file-path: 'action.yml'
