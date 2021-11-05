@@ -42,7 +42,9 @@ func main() {
 	}
 
 	err = client.CreateApp(context.TODO(), &app)
-	log.Fatal("failed to create shipa app:", err)
+	if err != nil {
+		log.Fatal("failed to create shipa app:", err)
+	}
 }
 
 func getFilePath() (string, error) {
