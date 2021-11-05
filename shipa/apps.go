@@ -40,10 +40,10 @@ func NewUpdateAppRequest(a *App) *UpdateAppRequest {
 
 // App - represents shipa app
 type App struct {
-	Name        string        `json:"name,omitempty"`
-	Description string        `json:"description,omitempty"`
-	Pool        string        `json:"pool,omitempty"`
-	TeamOwner   string        `json:"teamowner,omitempty"`
+	Name        string        `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
+	Pool        string        `json:"pool,omitempty" yaml:"framework,omitempty"`
+	TeamOwner   string        `json:"teamowner,omitempty" yaml:"teamowner,omitempty"`
 	Plan        *Plan         `json:"plan,omitempty"`
 	Units       []*Unit       `json:"units,omitempty"`
 	Cname       []string      `json:"cname,omitempty"`

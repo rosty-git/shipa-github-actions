@@ -1,45 +1,60 @@
 package main
 
 import (
-    "fmt"
-    "github.com/brunoa19/shipa-github-actions/shipa"
-    "os"
+	"context"
+	"errors"
+	"io/ioutil"
+	"log"
+	"os"
+
+	"github.com/brunoa19/shipa-github-actions/shipa"
+	"gopkg.in/yaml.v2"
 )
 
 func main() {
-    if host, ok := os.LookupEnv("SHIPA_HOST"); ok {
-        fmt.Println("host:", host)
-    }
+	if _, ok := os.LookupEnv("SHIPA_HOST"); !ok {
+		log.Fatal("SHIPA_HOST env not set")
+	}
 
-    if token, ok := os.LookupEnv("SHIPA_TOKEN"); ok {
-        fmt.Println("token:", token)
-    }
+	if _, ok := os.LookupEnv("SHIPA_TOKEN"); !ok {
+		log.Fatal("SHIPA_TOKEN env not set")
+	}
 
-    _, err := shipa.New()
-    if err != nil {
-        fmt.Println("ERR failed create shipa client:", err)
-    } else {
-        fmt.Println("shipa client created")
-    }
+	path, err := getFilePath()
+	if err != nil {
+		log.Fatal("invalid file path:", err)
+	}
 
-    args := os.Args[1:]
-    fmt.Println("Input args:", args)
-    if len(args) > 0 {
-        path := args[0]
-        fmt.Println("Input file path:", path)
+	yamlFile, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalf("yamlFile.Get err   #%v ", err)
+	}
 
-        if _, err := os.Stat(path); err != nil {
-            fmt.Println("ERR file stats:", err)
-        } else {
-            fmt.Println("File exists: OK")
+	var app shipa.App
+	err = yaml.Unmarshal(yamlFile, &app)
+	if err != nil {
+		log.Fatalf("Unmarshal: %v", err)
+	}
 
-            rawContent, err := os.ReadFile(path)
-            if err != nil {
-                fmt.Println("ERR read file failed:", err)
-            } else {
-                fmt.Println(string(rawContent))
-            }
+	client, err := shipa.New()
+	if err != nil {
+		log.Fatal("failed to create shipa client:", err)
+	}
 
-        }
-    }
+	err = client.CreateApp(context.TODO(), &app)
+	log.Fatal("failed to create shipa app:", err)
+}
+
+func getFilePath() (string, error) {
+	args := os.Args[1:]
+	if len(args) == 0 {
+		return "", errors.New("no input arg")
+	}
+
+	path := args[0]
+
+	if _, err := os.Stat(path); err != nil {
+		return "", err
+	}
+	return path, nil
 }
