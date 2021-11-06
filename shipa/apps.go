@@ -44,30 +44,30 @@ type App struct {
 	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
 	Pool        string        `json:"pool,omitempty" yaml:"framework,omitempty"`
 	TeamOwner   string        `json:"teamowner,omitempty" yaml:"teamowner,omitempty"`
-	Plan        *Plan         `json:"plan,omitempty"`
-	Units       []*Unit       `json:"units,omitempty"`
-	Cname       []string      `json:"cname,omitempty"`
-	IP          string        `json:"ip,omitempty"`
-	Org         string        `json:"org,omitempty"`
-	Entrypoints []*Entrypoint `json:"entrypoints,omitempty"`
-	Routers     []*Router     `json:"routers,omitempty"`
-	Lock        *Lock         `json:"lock,omitempty"`
-	Tags        []string      `json:"tags,omitempty"`
-	Platform    string        `json:"platform,omitempty"`
-	Status      string        `json:"status,omitempty"`
-	Error       string        `json:"error,omitempty"` // not shows in API response
+	Plan        *Plan         `json:"plan,omitempty" yaml:"plan,omitempty"`
+	Units       []*Unit       `json:"units,omitempty" yaml:"units,omitempty"`
+	Cname       []string      `json:"cname,omitempty" yaml:"cname,omitempty"`
+	IP          string        `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Org         string        `json:"org,omitempty" yaml:"org,omitempty"`
+	Entrypoints []*Entrypoint `json:"entrypoints,omitempty" yaml:"entrypoints,omitempty"`
+	Routers     []*Router     `json:"routers,omitempty" yaml:"routers,omitempty"`
+	Lock        *Lock         `json:"lock,omitempty" yaml:"lock,omitempty"`
+	Tags        []string      `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Platform    string        `json:"platform,omitempty" yaml:"platform,omitempty"`
+	Status      string        `json:"status,omitempty" yaml:"status,omitempty"`
+	Error       string        `json:"error,omitempty" yaml:"error,omitempty"` // not shows in API response
 }
 
 // Plan - part of App object
 type Plan struct {
-	Name     string   `json:"name,omitempty"`
-	Memory   int64    `json:"memory"`
-	Swap     int64    `json:"swap"`
-	CPUShare int64    `json:"cpushare"`
-	Default  bool     `json:"default"`
-	Public   bool     `json:"public"`
-	Org      string   `json:"org,omitempty"`
-	Teams    []string `json:"teams,omitempty"`
+	Name     string   `json:"name,omitempty" yaml:"name,omitempty"`
+	Memory   int64    `json:"memory" yaml:"memory"`
+	Swap     int64    `json:"swap" yaml:"swap"`
+	CPUShare int64    `json:"cpushare" yaml:"cpushare"`
+	Default  bool     `json:"default" yaml:"default"`
+	Public   bool     `json:"public" yaml:"public"`
+	Org      string   `json:"org,omitempty" yaml:"org,omitempty"`
+	Teams    []string `json:"teams,omitempty" yaml:"teams,omitempty"`
 }
 
 // CreatePlanRequest - create request for Plan
@@ -103,55 +103,55 @@ func BytesToHuman(input int64) string {
 
 // Unit - part of App object
 type Unit struct {
-	ID          string   `json:"ID,omitempty"`
-	Name        string   `json:"Name,omitempty"`
-	AppName     string   `json:"AppName,omitempty"`
-	ProcessName string   `json:"ProcessName,omitempty"`
-	Type        string   `json:"Type,omitempty"`
-	IP          string   `json:"IP,omitempty"`
-	Status      string   `json:"Status,omitempty"`
-	Version     string   `json:"Version,omitempty"`
-	Org         string   `json:"Org,omitempty"`
-	HostAddr    string   `json:"HostAddr,omitempty"`
-	HostPort    string   `json:"HostPort,omitempty"`
-	Address     *Address `json:"Address,omitempty"`
+	ID          string   `json:"ID,omitempty" yaml:"ID,omitempty"`
+	Name        string   `json:"Name,omitempty" yaml:"Name,omitempty"`
+	AppName     string   `json:"AppName,omitempty" yaml:"AppName,omitempty"`
+	ProcessName string   `json:"ProcessName,omitempty" yaml:"ProcessName,omitempty"`
+	Type        string   `json:"Type,omitempty" yaml:"Type,omitempty"`
+	IP          string   `json:"IP,omitempty" yaml:"IP,omitempty"`
+	Status      string   `json:"Status,omitempty" yaml:"Status,omitempty"`
+	Version     string   `json:"Version,omitempty" yaml:"Version,omitempty"`
+	Org         string   `json:"Org,omitempty" yaml:"Org,omitempty"`
+	HostAddr    string   `json:"HostAddr,omitempty" yaml:"HostAddr,omitempty"`
+	HostPort    string   `json:"HostPort,omitempty" yaml:"HostPort,omitempty"`
+	Address     *Address `json:"Address,omitempty" yaml:"Address,omitempty"`
 }
 
 // Address - part of Unit object
 type Address struct {
-	Scheme      string `json:"Scheme,omitempty"`
-	Host        string `json:"Host,omitempty"`
-	Opaque      string `json:"Opaque,omitempty"`
-	User        string `json:"User,omitempty"`
-	Path        string `json:"Path,omitempty"`
-	RawPath     string `json:"RawPath,omitempty"`
-	ForceQuery  bool   `json:"ForceQuery"`
-	RawQuery    string `json:"RawQuery,omitempty"`
-	Fragment    string `json:"Fragment,omitempty"`
-	RawFragment string `json:"RawFragment,omitempty"`
+	Scheme      string `json:"Scheme,omitempty" yaml:"Scheme,omitempty"`
+	Host        string `json:"Host,omitempty" yaml:"Host,omitempty"`
+	Opaque      string `json:"Opaque,omitempty" yaml:"Opaque,omitempty"`
+	User        string `json:"User,omitempty" yaml:"User,omitempty"`
+	Path        string `json:"Path,omitempty" yaml:"Path,omitempty"`
+	RawPath     string `json:"RawPath,omitempty" yaml:"RawPath,omitempty"`
+	ForceQuery  bool   `json:"ForceQuery" yaml:"ForceQuery"`
+	RawQuery    string `json:"RawQuery,omitempty" yaml:"RawQuery,omitempty"`
+	Fragment    string `json:"Fragment,omitempty" yaml:"Fragment,omitempty"`
+	RawFragment string `json:"RawFragment,omitempty" yaml:"RawFragment,omitempty"`
 }
 
 // Entrypoint - part of App object
 type Entrypoint struct {
-	Cname  string `json:"cname,omitempty"`
-	Scheme string `json:"scheme,omitempty"`
+	Cname  string `json:"cname,omitempty" yaml:"cname,omitempty"`
+	Scheme string `json:"scheme,omitempty" yaml:"scheme,omitempty"`
 }
 
 // Router - part of App object
 type Router struct {
-	Name    string                 `json:"name,omitempty"`
-	Opts    map[string]interface{} `json:"opts,omitempty"`
-	Type    string                 `json:"type,omitempty"`
-	Address string                 `json:"address,omitempty"`
-	Default bool                   `json:"default"` // not show in API response
+	Name    string                 `json:"name,omitempty" yaml:"name,omitempty"`
+	Opts    map[string]interface{} `json:"opts,omitempty" yaml:"opts,omitempty"`
+	Type    string                 `json:"type,omitempty" yaml:"type,omitempty"`
+	Address string                 `json:"address,omitempty" yaml:"address,omitempty"`
+	Default bool                   `json:"default" yaml:"default"` // not show in API response
 }
 
 // Lock - part of App object
 type Lock struct {
-	Locked      bool   `json:"Locked"`
-	Reason      string `json:"Reason,omitempty"`
-	Owner       string `json:"Owner,omitempty"`
-	AcquireDate string `json:"AcquireDate,omitempty"`
+	Locked      bool   `json:"Locked" yaml:"Locked"`
+	Reason      string `json:"Reason,omitempty" yaml:"Reason,omitempty"`
+	Owner       string `json:"Owner,omitempty" yaml:"Owner,omitempty"`
+	AcquireDate string `json:"AcquireDate,omitempty" yaml:"AcquireDate,omitempty"`
 }
 
 // ListApps - retrieves all apps
