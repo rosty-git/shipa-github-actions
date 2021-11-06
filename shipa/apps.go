@@ -259,21 +259,22 @@ func (c *Client) DeleteAppCname(ctx context.Context, appName string, req *AppCna
 
 // AppDeploy - represents app deploy object
 type AppDeploy struct {
-	Image          string `json:"image"`
-	PrivateImage   bool   `json:"private-image,omitempty"`
-	RegistryUser   string `json:"registry-user,omitempty"`
-	RegistrySecret string `json:"registry-secret,omitempty"`
-	Steps          int64  `json:"steps,omitempty"`
-	StepWeight     int64  `json:"step-weight,omitempty"`
-	StepInterval   string `json:"step-interval,omitempty"`
-	Port           int64  `json:"port,omitempty"`
-	Detach         bool   `json:"detach"`
-	Message        string `json:"message,omitempty"`
-	ShipaYaml      string `json:"shipayaml,omitempty"`
+	App            string `yaml:"app"`
+	Image          string `json:"image" yaml:"image"`
+	PrivateImage   bool   `json:"private-image,omitempty" yaml:"private-image,omitempty"`
+	RegistryUser   string `json:"registry-user,omitempty" yaml:"registry-user,omitempty"`
+	RegistrySecret string `json:"registry-secret,omitempty" yaml:"registry-secret,omitempty"`
+	Steps          int64  `json:"steps,omitempty" yaml:"steps,omitempty"`
+	StepWeight     int64  `json:"step-weight,omitempty" yaml:"step-weight,omitempty"`
+	StepInterval   string `json:"step-interval,omitempty" yaml:"step-interval,omitempty"`
+	Port           int64  `json:"port,omitempty" yaml:"port,omitempty"`
+	Detach         bool   `json:"detach" yaml:"detach"`
+	Message        string `json:"message,omitempty" yaml:"message,omitempty"`
+	ShipaYaml      string `json:"shipayaml,omitempty" yaml:"shipayaml,omitempty"`
 }
 
 // DeployApp - sends request to deploy app with giving parameters
-func (c *Client) DeployApp(ctx context.Context, appName string, req *AppDeploy) error {
+func (c *Client) DeployApp(ctx context.Context, req *AppDeploy) error {
 	params := map[string]string{
 		"image": req.Image,
 	}
@@ -312,7 +313,7 @@ func (c *Client) DeployApp(ctx context.Context, appName string, req *AppDeploy) 
 		params["shipayaml"] = yamlContent
 	}
 
-	return c.postURLEncoded(ctx, params, apiAppDeploy(appName))
+	return c.postURLEncoded(ctx, params, apiAppDeploy(req.App))
 }
 
 func getShipaYamlBase64Enc(path string) (string, error) {

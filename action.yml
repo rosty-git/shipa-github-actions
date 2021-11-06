@@ -7,6 +7,7 @@ inputs:
     default: 'app.yml'
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: 'vmanilo/shipa-action:0.0.2'
   args:
+    - app
     - ${{ inputs.file-path }}
