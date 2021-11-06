@@ -1,6 +1,4 @@
 .gitignore
-.github
+.git
 .idea
-apps
-action.yml
 README.md

@@ -1,8 +1,5 @@
 FROM golang:1.16 AS builder
 
-#ARG SHIPA_TOKEN
-#ARG SHIPA_HOST
-
 RUN apt update \
     && apt install gettext git ca-certificates -y \
     && update-ca-certificates
@@ -29,9 +26,6 @@ RUN go build -ldflags '-extldflags "-static"' -tags 'osusergo netgo static_build
 
 ### Build result container
 FROM scratch
-
-#ENV SHIPA_TOKEN=${SHIPA_TOKEN}
-#ENV SHIPA_HOST=${SHIPA_HOST}
 
 # Copy static executable
 COPY --from=builder /build/action .
