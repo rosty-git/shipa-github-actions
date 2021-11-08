@@ -4,24 +4,15 @@ import "context"
 
 // NetworkPolicy - represents Shipa network-policy
 type NetworkPolicy struct {
-	Ingress    *NetworkPolicyConfig `json:"ingress,omitempty"`
-	Egress     *NetworkPolicyConfig `json:"egress,omitempty"`
-	RestartApp bool                 `json:"restart_app"`
-}
-
-func (p *NetworkPolicy) updateAllowedPools() {
-	if p.Ingress != nil {
-		p.Ingress.updateAllowedPools()
-	}
-	if p.Egress != nil {
-		p.Egress.updateAllowedPools()
-	}
+	App string `yaml:"app"`
+	Ingress    *NetworkPolicyConfig `json:"ingress,omitempty" yaml:"ingress,omitempty"`
+	Egress     *NetworkPolicyConfig `json:"egress,omitempty" yaml:"egress,omitempty"`
+	RestartApp bool                 `json:"restart_app" yaml:"restart_app"`
 }
 
 // CreateOrUpdateNetworkPolicy - creates or updates network policy
-func (c *Client) CreateOrUpdateNetworkPolicy(ctx context.Context, app string, config *NetworkPolicy) error {
-	config.updateAllowedPools()
-	return c.put(ctx, config, apiAppNetworkPolicy(app))
+func (c *Client) CreateOrUpdateNetworkPolicy(ctx context.Context, config *NetworkPolicy) error {
+	return c.put(ctx, config, apiAppNetworkPolicy(config.App))
 }
 
 // DeleteNetworkPolicy - deletes network policy from the given app

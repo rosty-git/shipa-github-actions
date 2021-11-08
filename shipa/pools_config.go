@@ -88,79 +88,47 @@ type PoolNetworkPolicy struct {
 
 // NetworkPolicyConfig - part of PoolNetworkPolicy
 type NetworkPolicyConfig struct {
-	PolicyMode        string               `json:"policy_mode,omitempty"`
-	CustomRules       []*NetworkPolicyRule `json:"custom_rules,omitempty"`
-	ShipaRules        []*NetworkPolicyRule `json:"shipa_rules,omitempty"`
-	ShipaRulesEnabled []string             `json:"shipa_rules_enabled,omitempty"`
+	PolicyMode        string               `json:"policy_mode,omitempty" yaml:"policy_mode,omitempty"`
+	CustomRules       []*NetworkPolicyRule `json:"custom_rules,omitempty" yaml:"custom_rules,omitempty"`
+	ShipaRules        []*NetworkPolicyRule `json:"shipa_rules,omitempty" yaml:"shipa_rules,omitempty"`
+	ShipaRulesEnabled []string             `json:"shipa_rules_enabled,omitempty" yaml:"shipa_rules_enabled,omitempty"`
 }
 
 // NetworkPolicyRule - part of NetworkPolicy
 type NetworkPolicyRule struct {
-	ID                string         `json:"id,omitempty"`
-	Enabled           bool           `json:"enabled"`
-	Description       string         `json:"description,omitempty"`
-	Ports             []*NetworkPort `json:"ports,omitempty"`
-	Peers             []*NetworkPeer `json:"peers,omitempty"`
-	AllowedApps       []string       `json:"allowed_apps,omitempty"`
-	AllowedPools      []string       `json:"allowed_pools,omitempty"`
-	AllowedFrameworks []string       `json:"allowed_frameworks,omitempty"` // uses for transferring data from crossplane
+	ID                string         `json:"id,omitempty" yaml:"id,omitempty"`
+	Enabled           bool           `json:"enabled" yaml:"enabled"`
+	Description       string         `json:"description,omitempty" yaml:"description,omitempty"`
+	Ports             []*NetworkPort `json:"ports,omitempty" yaml:"ports,omitempty"`
+	Peers             []*NetworkPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
+	AllowedApps       []string       `json:"allowed_apps,omitempty" yaml:"allowed_apps,omitempty"`
+	AllowedPools      []string       `json:"allowed_pools,omitempty" yaml:"allowed_frameworks,omitempty"`
 }
 
 // NetworkPort - part of NetworkPolicyRule
 type NetworkPort struct {
-	Protocol string `json:"protocol,omitempty"`
-	Port     int    `json:"port,omitempty"`
+	Protocol string `json:"protocol,omitempty" yaml:"protocol,omitempty"`
+	Port     int    `json:"port,omitempty" yaml:"port,omitempty"`
 }
 
 // NetworkPeer - part of NetworkPolicyRule
 type NetworkPeer struct {
-	PodSelector       *NetworkPeerSelector `json:"podSelector,omitempty"`
-	NamespaceSelector *NetworkPeerSelector `json:"namespaceSelector,omitempty"`
-	IPBlock           []string             `json:"ipBlock,omitempty"`
+	PodSelector       *NetworkPeerSelector `json:"podSelector,omitempty" yaml:"podSelector,omitempty"`
+	NamespaceSelector *NetworkPeerSelector `json:"namespaceSelector,omitempty" yaml:"namespaceSelector,omitempty"`
+	IPBlock           []string             `json:"ipBlock,omitempty" yaml:"ipBlock,omitempty"`
 }
 
 // NetworkPeerSelector - part of NetworkPeer
 type NetworkPeerSelector struct {
-	MatchLabels      map[string]string     `json:"matchLabels,omitempty"`
-	MatchExpressions []*SelectorExpression `json:"matchExpressions,omitempty"`
+	MatchLabels      map[string]string     `json:"matchLabels,omitempty" yaml:"matchLabels,omitempty"`
+	MatchExpressions []*SelectorExpression `json:"matchExpressions,omitempty" yaml:"matchExpressions,omitempty"`
 }
 
 // SelectorExpression - part of NetworkPeerSelector
 type SelectorExpression struct {
-	Key      string   `json:"key,omitempty"`
-	Operator string   `json:"operator,omitempty"`
-	Values   []string `json:"values,omitempty"`
-}
-
-func (n *NetworkPolicyRule) updateAllowedPools() {
-	if len(n.AllowedFrameworks) > 0 {
-		n.AllowedPools = n.AllowedFrameworks
-		n.AllowedFrameworks = nil
-	}
-}
-
-func (n *NetworkPolicyConfig) updateAllowedPools() {
-	for i := range n.CustomRules {
-		n.CustomRules[i].updateAllowedPools()
-	}
-	for i := range n.ShipaRules {
-		n.ShipaRules[i].updateAllowedPools()
-	}
-}
-
-func (p *PoolConfig) updateAllowedPools() {
-	if p.Resources != nil && p.Resources.General != nil && p.Resources.General.NetworkPolicy != nil {
-		p.Resources.General.NetworkPolicy.updateAllowedPools()
-	}
-}
-
-func (p *PoolNetworkPolicy) updateAllowedPools() {
-	if p.Ingress != nil {
-		p.Ingress.updateAllowedPools()
-	}
-	if p.Egress != nil {
-		p.Egress.updateAllowedPools()
-	}
+	Key      string   `json:"key,omitempty" yaml:"key,omitempty"`
+	Operator string   `json:"operator,omitempty" yaml:"operator,omitempty"`
+	Values   []string `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // GetPoolConfig - retrieves pool
@@ -176,12 +144,10 @@ func (c *Client) GetPoolConfig(ctx context.Context, name string) (*PoolConfig, e
 
 // CreatePoolConfig - creates pool
 func (c *Client) CreatePoolConfig(ctx context.Context, pool *PoolConfig) error {
-	pool.updateAllowedPools()
 	return c.post(ctx, pool, apiPoolsConfig)
 }
 
 // UpdatePoolConfig - updates pool
 func (c *Client) UpdatePoolConfig(ctx context.Context, req *PoolConfig) error {
-	req.updateAllowedPools()
 	return c.put(ctx, req, apiPoolsConfig)
 }

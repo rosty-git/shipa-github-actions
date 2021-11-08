@@ -193,20 +193,21 @@ func (c *Client) DeleteApp(ctx context.Context, name string) error {
 
 // AppEnv represents application env variable
 type AppEnv struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string `json:"name" yaml:"name"`
+	Value string `json:"value" yaml:"value"`
 }
 
 // CreateAppEnv - request to create AppEnv
 type CreateAppEnv struct {
-	Envs      []*AppEnv `json:"envs"`
-	NoRestart bool      `json:"norestart"`
-	Private   bool      `json:"private"`
+	App       string    `yaml:"app"`
+	Envs      []*AppEnv `json:"envs" yaml:"envs"`
+	NoRestart bool      `json:"norestart" yaml:"norestart"`
+	Private   bool      `json:"private" yaml:"private"`
 }
 
 // CreateAppEnvs - create app envs
-func (c *Client) CreateAppEnvs(ctx context.Context, appName string, req *CreateAppEnv) error {
-	return c.post(ctx, req, apiAppEnvs(appName))
+func (c *Client) CreateAppEnvs(ctx context.Context, req *CreateAppEnv) error {
+	return c.post(ctx, req, apiAppEnvs(req.App))
 }
 
 // GetAppEnvs - retrieves app envs
@@ -221,7 +222,7 @@ func (c *Client) GetAppEnvs(ctx context.Context, appName string) ([]*AppEnv, err
 }
 
 // DeleteAppEnvs - deletes app env
-func (c *Client) DeleteAppEnvs(ctx context.Context, appName string, req *CreateAppEnv) error {
+func (c *Client) DeleteAppEnvs(ctx context.Context, req *CreateAppEnv) error {
 	params := []*QueryParam{
 		{Key: "norestart", Val: req.NoRestart},
 	}
@@ -230,7 +231,7 @@ func (c *Client) DeleteAppEnvs(ctx context.Context, appName string, req *CreateA
 	}
 
 	if len(params) > 1 {
-		return c.deleteWithParams(ctx, params, apiAppEnvs(appName))
+		return c.deleteWithParams(ctx, params, apiAppEnvs(req.App))
 	}
 
 	return nil

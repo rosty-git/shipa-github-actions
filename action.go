@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -12,14 +13,11 @@ import (
 )
 
 func main() {
-	args := os.Args[1:]
-	if len(args) == 0 {
-		log.Fatal("no input arg")
-	}
-
-	if len(args) != 2 {
-		log.Fatal("expected 2 args")
-	}
+	appYml := flag.String("app", "", "Path to app.yml")
+	appEnvYml := flag.String("app-env", "", "Path to app-env.yml")
+	networkPolicyYml := flag.String("network-policy", "", "Path to network-policy.yml")
+	appDeployYml := flag.String("app-deploy", "", "Path to app-deploy.yml")
+	flag.Parse()
 
 	if _, ok := os.LookupEnv("SHIPA_HOST"); !ok {
 		log.Fatal("SHIPA_HOST env not set")
@@ -29,38 +27,61 @@ func main() {
 		log.Fatal("SHIPA_TOKEN env not set")
 	}
 
-	objectType, path := args[0], args[1]
-	if _, err := os.Stat(path); err != nil {
-		log.Fatal("invalid file path:", err)
-	}
-
 	client, err := shipa.New()
 	if err != nil {
 		log.Fatal("failed to create shipa client:", err)
 	}
 
-	yamlFile, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatalf("yamlFile.Get err   #%v ", err)
+	if *appYml != "" {
+		err = createApp(client, *appYml)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
-	switch objectType {
-	case "app":
-		err = createApp(client, yamlFile)
-	case "appDeploy":
-		err = deployApp(client, yamlFile)
-	default:
-		err = fmt.Errorf("object type not recognized: %v", objectType)
+	if *appEnvYml != "" {
+		err = createAppEnv(client, *appEnvYml)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
-	if err != nil {
-		log.Fatal(err)
+	if *networkPolicyYml != "" {
+		err = createNetworkPolicy(client, *networkPolicyYml)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if *appDeployYml != "" {
+		err = deployApp(client, *appDeployYml)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
-func createApp(client *shipa.Client, yamlFile []byte) error {
+func readFile(path string) ([]byte, error) {
+	if _, err := os.Stat(path); err != nil {
+		return nil, fmt.Errorf("invalid file path: %v", err)
+	}
+
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file: %v", err)
+	}
+
+	return bytes, nil
+}
+
+func createApp(client *shipa.Client, path string) error {
+	yamlFile, err := readFile(path)
+	if err != nil {
+		return err
+	}
+
 	var app shipa.App
-	err := yaml.Unmarshal(yamlFile, &app)
+	err = yaml.Unmarshal(yamlFile, &app)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal: %v", err)
 	}
@@ -79,9 +100,54 @@ func createApp(client *shipa.Client, yamlFile []byte) error {
 	return nil
 }
 
-func deployApp(client *shipa.Client, yamlFile []byte) error {
+func createAppEnv(client *shipa.Client, path string) error {
+	yamlFile, err := readFile(path)
+	if err != nil {
+		return err
+	}
+
+	var appEnv shipa.CreateAppEnv
+	err = yaml.Unmarshal(yamlFile, &appEnv)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal: %v", err)
+	}
+
+	err = client.CreateAppEnvs(context.TODO(), &appEnv)
+	if err != nil {
+		return fmt.Errorf("failed to create shipa appEnv: %v", err)
+	}
+
+	return nil
+}
+
+func createNetworkPolicy(client *shipa.Client, path string) error {
+	yamlFile, err := readFile(path)
+	if err != nil {
+		return err
+	}
+
+	var networkPolicy shipa.NetworkPolicy
+	err = yaml.Unmarshal(yamlFile, &networkPolicy)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal: %v", err)
+	}
+
+	err = client.CreateOrUpdateNetworkPolicy(context.TODO(), &networkPolicy)
+	if err != nil {
+		return fmt.Errorf("failed to create shipa networkPolicy: %v", err)
+	}
+
+	return nil
+}
+
+func deployApp(client *shipa.Client, path string) error {
+	yamlFile, err := readFile(path)
+	if err != nil {
+		return err
+	}
+
 	var appDeploy shipa.AppDeploy
-	err := yaml.Unmarshal(yamlFile, &appDeploy)
+	err = yaml.Unmarshal(yamlFile, &appDeploy)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal: %v", err)
 	}
