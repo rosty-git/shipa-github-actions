@@ -109,28 +109,27 @@ func createShipaAction(client *shipa.Client, path string) error {
 
 	if action.App != nil {
 		_, err = client.GetApp(context.TODO(), action.App.Name)
-		if err == nil {
-			// action exists
-			return nil
+		if err != nil {
+			// app does not exist
+			err = client.CreateApp(context.TODO(), action.App)
+			if err != nil {
+				return fmt.Errorf("failed to create shipa app: %v", err)
+			}
 		}
 
-		err = client.CreateApp(context.TODO(), action.App)
-		if err != nil {
-			return fmt.Errorf("failed to create shipa action: %v", err)
-		}
 	}
 
 	if action.AppEnv != nil {
 		err = client.CreateAppEnvs(context.TODO(), action.AppEnv)
 		if err != nil {
-			return fmt.Errorf("failed to create shipa appEnv: %v", err)
+			return fmt.Errorf("failed to create shipa app-env: %v", err)
 		}
 	}
 
 	if action.NetworkPolicy != nil {
 		err = client.CreateOrUpdateNetworkPolicy(context.TODO(), action.NetworkPolicy)
 		if err != nil {
-			return fmt.Errorf("failed to create shipa networkPolicy: %v", err)
+			return fmt.Errorf("failed to create shipa network-policy: %v", err)
 		}
 	}
 
