@@ -4,86 +4,86 @@ import "context"
 
 // PoolConfig - represents Shipa pool
 type PoolConfig struct {
-	Name      string         `json:"shipaFramework"`
-	Resources *PoolResources `json:"resources,omitempty"`
+	Name      string         `json:"shipaFramework" yaml:"name"`
+	Resources *PoolResources `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 // PoolResources - describes main pool configuration part
 type PoolResources struct {
-	General *PoolGeneral `json:"general,omitempty"`
-	Node    *PoolNode    `json:"shipaNode,omitempty"`
+	General *PoolGeneral `json:"general,omitempty" yaml:"general,omitempty"`
+	Node    *PoolNode    `json:"shipaNode,omitempty" yaml:"shipaNode,omitempty"`
 }
 
 // PoolNode - part of PoolResources configurations
 type PoolNode struct {
-	Drivers   []string       `json:"drivers,omitempty"`
-	AutoScale *PoolAutoScale `json:"autoScale,omitempty"`
+	Drivers   []string       `json:"drivers,omitempty" yaml:"drivers,omitempty"`
+	AutoScale *PoolAutoScale `json:"autoScale,omitempty" yaml:"autoScale,omitempty"`
 }
 
 // PoolAutoScale - part of PoolNode
 type PoolAutoScale struct {
-	MaxContainer int     `json:"maxContainer"`
-	MaxMemory    int     `json:"maxMemory"`
-	ScaleDown    float64 `json:"scaleDown"`
-	Rebalance    bool    `json:"rebalance"`
+	MaxContainer int     `json:"maxContainer" yaml:"maxContainer"`
+	MaxMemory    int     `json:"maxMemory" yaml:"maxMemory"`
+	ScaleDown    float64 `json:"scaleDown" yaml:"scaleDown"`
+	Rebalance    bool    `json:"rebalance" yaml:"rebalance"`
 }
 
 // PoolGeneral - pool general configuration
 type PoolGeneral struct {
-	Setup           *PoolSetup           `json:"setup,omitempty"`
-	Plan            *PoolPlan            `json:"plan,omitempty"`
-	Security        *PoolSecurity        `json:"security,omitempty"`
-	Access          *PoolServiceAccess   `json:"access,omitempty"`
-	Services        *PoolServiceAccess   `json:"services,omitempty"`
-	Router          string               `json:"router,omitempty"`
-	Volumes         []string             `json:"volumes,omitempty"`
-	AppQuota        *PoolAppQuota        `json:"appQuota,omitempty"`
-	ContainerPolicy *PoolContainerPolicy `json:"containerPolicy,omitempty"`
-	NetworkPolicy   *PoolNetworkPolicy   `json:"networkPolicy,omitempty"`
+	Setup           *PoolSetup           `json:"setup,omitempty" yaml:"setup,omitempty"`
+	Plan            *PoolPlan            `json:"plan,omitempty" yaml:"plan,omitempty"`
+	Security        *PoolSecurity        `json:"security,omitempty" yaml:"security,omitempty"`
+	Access          *PoolServiceAccess   `json:"access,omitempty" yaml:"access,omitempty"`
+	Services        *PoolServiceAccess   `json:"services,omitempty" yaml:"services,omitempty"`
+	Router          string               `json:"router,omitempty" yaml:"router,omitempty"`
+	Volumes         []string             `json:"volumes,omitempty" yaml:"volumes,omitempty"`
+	AppQuota        *PoolAppQuota        `json:"appQuota,omitempty" yaml:"appQuota,omitempty"`
+	ContainerPolicy *PoolContainerPolicy `json:"containerPolicy,omitempty" yaml:"containerPolicy,omitempty"`
+	NetworkPolicy   *PoolNetworkPolicy   `json:"networkPolicy,omitempty" yaml:"networkPolicy,omitempty"`
 }
 
 // PoolContainerPolicy - part of PoolGeneral object
 type PoolContainerPolicy struct {
-	AllowedHosts []string `json:"allowedHosts,omitempty"`
+	AllowedHosts []string `json:"allowedHosts,omitempty" yaml:"allowedHosts,omitempty"`
 }
 
 // PoolAppQuota - part of PoolGeneral object
 type PoolAppQuota struct {
-	Limit string `json:"limit,omitempty"`
+	Limit string `json:"limit,omitempty" yaml:"limit,omitempty"`
 }
 
 // PoolServiceAccess - part of PoolGeneral object
 type PoolServiceAccess struct {
-	Append    []string `json:"append,omitempty"`
-	Blacklist []string `json:"blacklist,omitempty"`
+	Append    []string `json:"append,omitempty" yaml:"append,omitempty"`
+	Blacklist []string `json:"blacklist,omitempty" yaml:"blacklist,omitempty"`
 }
 
 // PoolSecurity - part of PoolGeneral object
 type PoolSecurity struct {
-	DisableScan        bool     `json:"disableScan"`
-	ScanPlatformLayers bool     `json:"scanPlatformLayers"`
-	IgnoreComponents   []string `json:"ignoreComponents,omitempty"`
-	IgnoreCVES         []string `json:"ignoreCves,omitempty"`
+	DisableScan        bool     `json:"disableScan" yaml:"disableScan"`
+	ScanPlatformLayers bool     `json:"scanPlatformLayers" yaml:"scanPlatformLayers"`
+	IgnoreComponents   []string `json:"ignoreComponents,omitempty" yaml:"ignoreComponents,omitempty"`
+	IgnoreCVES         []string `json:"ignoreCves,omitempty" yaml:"ignoreCves,omitempty"`
 }
 
 // PoolPlan - part of PoolGeneral object
 type PoolPlan struct {
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // PoolSetup - part of PoolGeneral object
 type PoolSetup struct {
-	Default             bool   `json:"default"`
-	Public              bool   `json:"public"`
-	Provisioner         string `json:"provisioner,omitempty"`
-	KubernetesNamespace string `json:"kubernetesNamespace,omitempty"`
+	Default             bool   `json:"default" yaml:"default"`
+	Public              bool   `json:"public" yaml:"public"`
+	Provisioner         string `json:"provisioner,omitempty" yaml:"provisioner,omitempty"`
+	KubernetesNamespace string `json:"kubernetesNamespace,omitempty" yaml:"kubernetesNamespace,omitempty"`
 }
 
 // PoolNetworkPolicy - part of PoolGeneral object
 type PoolNetworkPolicy struct {
-	Ingress            *NetworkPolicyConfig `json:"ingress,omitempty"`
-	Egress             *NetworkPolicyConfig `json:"egress,omitempty"`
-	DisableAppPolicies bool                 `json:"disableAppPolicies"`
+	Ingress            *NetworkPolicyConfig `json:"ingress,omitempty" yaml:"ingress,omitempty"`
+	Egress             *NetworkPolicyConfig `json:"egress,omitempty" yaml:"egress,omitempty"`
+	DisableAppPolicies bool                 `json:"disableAppPolicies" yaml:"disableAppPolicies"`
 }
 
 // NetworkPolicyConfig - part of PoolNetworkPolicy
