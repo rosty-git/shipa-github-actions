@@ -79,12 +79,10 @@ func createShipaAction(client *shipa.Client, path string) error {
 	}
 
 	if action.App != nil {
-		err = createFrameworkIfNotExist(client, &shipa.PoolConfig{Name: action.App.Pool})
+		err = createAppIfNotExist(client, action.App)
 		if err != nil {
 			return err
 		}
-
-		err = createAppIfNotExist(client, action.App)
 	}
 
 	if action.AppEnv != nil {
