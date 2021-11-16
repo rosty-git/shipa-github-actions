@@ -12,6 +12,16 @@ type Cluster struct {
 }
 
 func (c *Cluster) ToShipaCluster() (*shipa.Cluster, error) {
+    var frameworks []*shipa.Framework
+    if c.Resources != nil && c.Resources.Frameworks != nil {
+        for _, name := range c.Resources.Frameworks.Name {
+            frameworks = append(frameworks, &shipa.Framework{
+                Name: name,
+            })
+        }
+        c.Resources.Frameworks = nil
+    }
+
     rawJson, err := json.Marshal(c)
     if err != nil {
         return nil, err
@@ -21,15 +31,6 @@ func (c *Cluster) ToShipaCluster() (*shipa.Cluster, error) {
     err = json.Unmarshal(rawJson, cluster)
     if err != nil {
         return nil, err
-    }
-
-    var frameworks []*shipa.Framework
-    if c.Resources != nil && c.Resources.Frameworks != nil {
-        for _, name := range c.Resources.Frameworks.Name {
-            frameworks = append(frameworks, &shipa.Framework{
-                Name: name,
-            })
-        }
     }
 
     if frameworks != nil {
