@@ -7,8 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/brunoa19/shipa-github-actions/shipa"
+	"github.com/brunoa19/shipa-github-actions/types"
 	"gopkg.in/yaml.v2"
 )
 
@@ -57,6 +59,7 @@ type ShipaAction struct {
 	NetworkPolicy *shipa.NetworkPolicy `yaml:"network-policy,omitempty"`
 	AppDeploy     *shipa.AppDeploy     `yaml:"app-deploy,omitempty"`
 	Framework     *shipa.PoolConfig    `yaml:"framework,omitempty"`
+	Cluster       *types.Cluster       `yaml:"cluster,omitempty"`
 }
 
 func createShipaAction(client *shipa.Client, path string) error {
@@ -69,6 +72,13 @@ func createShipaAction(client *shipa.Client, path string) error {
 	err = yaml.Unmarshal(yamlFile, &action)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal: %v", err)
+	}
+
+	if action.Cluster != nil {
+		err = createClusterIfNotExist(client, action.Cluster)
+		if err != nil {
+			return err
+		}
 	}
 
 	if action.Framework != nil {
@@ -131,4 +141,70 @@ func createAppIfNotExist(client *shipa.Client, app *shipa.App) error {
 		}
 	}
 	return nil
+}
+
+func createClusterIfNotExist(client *shipa.Client, input *types.Cluster) error {
+	cluster, err := input.ToShipaCluster()
+	if err != nil {
+		return fmt.Errorf("failed to parse shipa cluster: %v", err)
+	}
+
+	shipaCluster, err := client.GetCluster(context.TODO(), cluster.Name)
+	if err != nil && strings.Contains(err.Error(), "cluster not found") {
+		// cluster does not exist
+		err = client.CreateCluster(context.TODO(), cluster)
+		if err != nil {
+			return fmt.Errorf("failed to create shipa cluster: %v", err)
+		}
+		return nil
+	}
+
+	// check if need to add new frameworks to the cluster
+	newFrameworks := getNewFrameworks(shipaCluster, cluster)
+	if len(newFrameworks) > 0 {
+		if shipaCluster.Resources == nil {
+			shipaCluster.Resources = &shipa.ClusterResources{}
+		}
+
+		for _, name := range newFrameworks {
+			shipaCluster.Resources.Frameworks = append(shipaCluster.Resources.Frameworks, &shipa.Framework{
+				Name: name,
+			})
+		}
+
+		err = client.UpdateCluster(context.TODO(), shipaCluster)
+		if err != nil {
+			return fmt.Errorf("failed to update shipa cluster: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func getNewFrameworks(current *shipa.Cluster, newCluster *shipa.Cluster) []string {
+	currentFrameworks := convertFrameworksToMap(current)
+	newFrameworks := convertFrameworksToMap(newCluster)
+
+	var result []string
+	for name, _ := range newFrameworks {
+		if !currentFrameworks[name] {
+			result = append(result, name)
+		}
+	}
+
+	return result
+}
+
+func convertFrameworksToMap(cluster *shipa.Cluster) map[string]bool {
+	if cluster.Resources == nil || cluster.Resources.Frameworks == nil {
+		return nil
+	}
+
+	result := make(map[string]bool)
+	for _, framework := range cluster.Resources.Frameworks {
+		if framework != nil {
+			result[framework.Name] = true
+		}
+	}
+	return result
 }
