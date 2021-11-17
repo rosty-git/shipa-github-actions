@@ -99,6 +99,10 @@ func NewClient(host, token string) (*Client, error) {
 	return c, nil
 }
 
+func (c *Client) SetDebugMode(debug bool) {
+	c.debug = debug
+}
+
 func (c *Client) doRequest(req *http.Request) ([]byte, int, error) {
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.Token)

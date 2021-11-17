@@ -2,7 +2,10 @@ package types
 
 import (
     "encoding/json"
+    "fmt"
     "github.com/brunoa19/shipa-github-actions/shipa"
+    "io/ioutil"
+    "os"
 )
 
 type Cluster struct {
@@ -40,7 +43,39 @@ func (c *Cluster) ToShipaCluster() (*shipa.Cluster, error) {
         cluster.Resources.Frameworks = frameworks
     }
 
+    if cluster.Endpoint != nil {
+        cluster.Endpoint.Token = useFileOrValue(cluster.Endpoint.Token)
+        cluster.Endpoint.Certificate = useFileOrValue(cluster.Endpoint.Certificate)
+        cluster.Endpoint.ClientCertificate = useFileOrValue(cluster.Endpoint.ClientCertificate)
+        cluster.Endpoint.ClientKey = useFileOrValue(cluster.Endpoint.ClientKey)
+    }
+
     return cluster, nil
+}
+
+func useFileOrValue(value string) string {
+    if value == "" {
+        return ""
+    }
+
+    data, err := readFile(value)
+    if err != nil {
+        return value
+    }
+    return string(data)
+}
+
+func readFile(path string) ([]byte, error) {
+    if _, err := os.Stat(path); err != nil {
+        return nil, fmt.Errorf("invalid file path: %v", err)
+    }
+
+    bytes, err := ioutil.ReadFile(path)
+    if err != nil {
+        return nil, fmt.Errorf("failed to read file: %v", err)
+    }
+
+    return bytes, nil
 }
 
 // ClusterEndpoint - part of Cluster object

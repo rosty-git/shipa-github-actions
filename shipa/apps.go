@@ -291,11 +291,13 @@ func (c *Client) DeployApp(ctx context.Context, req *AppDeploy) error {
 		params["step-weight"] = strconv.FormatInt(req.StepWeight, 10)
 	}
 
-	interval, err := parseStepInterval(req.StepInterval)
-	if err != nil {
-		return err
+	if req.StepInterval != "" {
+		interval, err := parseStepInterval(req.StepInterval)
+		if err != nil {
+			return err
+		}
+		params["step-interval"] = interval
 	}
-	params["step-interval"] = interval
 
 	if req.Port > 0 {
 		params["port"] = strconv.FormatInt(req.Port, 10)

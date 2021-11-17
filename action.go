@@ -16,6 +16,7 @@ import (
 
 func main() {
 	shipaActionYml := flag.String("shipa-action", "", "Path to shipa-action.yml")
+	debug := flag.Bool("debug", false, "Enables debug mode")
 	flag.Parse()
 
 	if _, ok := os.LookupEnv("SHIPA_HOST"); !ok {
@@ -30,9 +31,10 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to create shipa client:", err)
 	}
+	client.SetDebugMode(*debug)
 
 	if *shipaActionYml != "" {
-		err = createShipaAction(client, *shipaActionYml)
+		err := createShipaAction(client, *shipaActionYml)
 		if err != nil {
 			log.Fatal(err)
 		}
