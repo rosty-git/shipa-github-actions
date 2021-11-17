@@ -172,6 +172,11 @@ func (c *Client) newRequest(ctx context.Context, method string, payload interfac
 		if err != nil {
 			return nil, err
 		}
+
+		if c.debug {
+			log.Printf(">>> Payload: %s\n", string(data))
+		}
+
 		body = bytes.NewBuffer(data)
 	}
 
@@ -201,6 +206,11 @@ func (c *Client) newRequestWithParams(ctx context.Context, method string, payloa
 		if err != nil {
 			return nil, err
 		}
+
+		if c.debug {
+			log.Printf(">>> Payload: %s\n", string(data))
+		}
+
 		body = bytes.NewBuffer(data)
 	}
 
@@ -230,6 +240,11 @@ func (c *Client) newRequestWithParamsList(ctx context.Context, method string, pa
 		if err != nil {
 			return nil, err
 		}
+
+		if c.debug {
+			log.Printf(">>> Payload: %s\n", string(data))
+		}
+
 		body = bytes.NewBuffer(data)
 	}
 
@@ -275,7 +290,7 @@ func (c *Client) postURLEncoded(ctx context.Context, params map[string]string, u
 	}
 
 	if c.debug {
-		fmt.Println("### Deploy app RESP:", string(body))
+		log.Println("### Deploy app RESP:", string(body))
 	}
 
 	if statusCode != http.StatusAccepted && statusCode != http.StatusCreated && statusCode != http.StatusOK {

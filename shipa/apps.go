@@ -300,7 +300,8 @@ func (c *Client) DeployApp(ctx context.Context, req *AppDeploy) error {
 	}
 
 	if req.Port > 0 {
-		params["port"] = strconv.FormatInt(req.Port, 10)
+		params["port-number"] = strconv.FormatInt(req.Port, 10)
+		params["port-protocol"] = "TCP"
 	}
 	if req.Detach {
 		params["detach"] = "true"
