@@ -2,7 +2,8 @@ FROM golang:1.16 AS builder
 
 RUN apt update \
     && apt install gettext git ca-certificates -y \
-    && update-ca-certificates
+    && update-ca-certificates \
+    && curl -s https://storage.googleapis.com/shipa-client/install-cloud-cli.sh | bash
 
 # Set necessary environment variables needed for our image
 ENV GO111MODULE=on \
@@ -24,17 +25,20 @@ COPY . .
 # Build the application
 RUN go build -ldflags '-extldflags "-static"' -tags 'osusergo netgo static_build' -o action .
 
-### Build result container
-FROM scratch
+RUN cp /build/action /usr/local/bin
 
-# Copy static executable
-COPY --from=builder /build/action .
-# Copy system files
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /etc/passwd /etc/passwd
+#### Build result container
+#FROM scratch
+#
+## Copy static executable
+#COPY --from=builder /build/action .
+#COPY --from=builder /usr/local/bin/shipa .
+## Copy system files
+#COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+#COPY --from=builder /etc/passwd /etc/passwd
 
 
 USER nobody
 
 # Command to run when starting the container
-ENTRYPOINT ["/action"]
+ENTRYPOINT ["action"]

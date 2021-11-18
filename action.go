@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/brunoa19/shipa-github-actions/shipa"
@@ -19,15 +21,34 @@ func main() {
 	debug := flag.Bool("debug", false, "Enables debug mode")
 	flag.Parse()
 
-	if _, ok := os.LookupEnv("SHIPA_HOST"); !ok {
+	host, ok := os.LookupEnv("SHIPA_HOST")
+	if !ok {
 		log.Fatal("SHIPA_HOST env not set")
 	}
 
-	if _, ok := os.LookupEnv("SHIPA_TOKEN"); !ok {
+	token, ok := os.LookupEnv("SHIPA_TOKEN")
+	if !ok {
 		log.Fatal("SHIPA_TOKEN env not set")
 	}
 
-	client, err := shipa.New()
+	u, err := url.ParseRequestURI(host)
+	if err != nil {
+		log.Fatalf("failed to parse URL: %+v", err)
+	}
+
+	out, err := exec.Command("/usr/local/bin/shipa", "target", "add", "shipa-cloud", u.Hostname(), "-s").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(string(out))
+
+	out, err = exec.Command("/usr/local/bin/shipa", "sso", "login", token).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(string(out))
+
+	client, err := shipa.NewClient(host, token)
 	if err != nil {
 		log.Fatal("failed to create shipa client:", err)
 	}
