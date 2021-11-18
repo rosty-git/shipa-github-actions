@@ -299,13 +299,10 @@ func (c *Client) DeployApp(ctx context.Context, req *AppDeploy) error {
 		params["step-interval"] = interval
 	}
 
-	// default port
-	port := "8888"
 	if req.Port > 0 {
-		port = strconv.FormatInt(req.Port, 10)
+		params["port-number"] = strconv.FormatInt(req.Port, 10)
+		params["port-protocol"] = "TCP"
 	}
-	params["port-number"] = port
-	params["port-protocol"] = "TCP"
 
 	if req.Detach {
 		params["detach"] = "true"
