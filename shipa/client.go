@@ -108,13 +108,20 @@ func (c *Client) doRequest(req *http.Request) ([]byte, int, error) {
 	req.Header.Set("Authorization", "Bearer "+c.Token)
 
 	res, err := c.HTTPClient.Do(req)
+	// ignore EOF error, when host drops connection
+	if err != nil && strings.HasSuffix(err.Error(), ": EOF") {
+		return []byte{}, http.StatusOK, nil
+	}
+
 	if err != nil {
 		return nil, 0, err
 	}
-	defer closeBody(res)
 
 	body, err := ioutil.ReadAll(res.Body)
-	closeBody(res)
+	if err != nil {
+		return nil, 0, err
+	}
+
 	return body, res.StatusCode, err
 }
 
