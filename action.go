@@ -76,15 +76,15 @@ func createShipaAction(client *shipa.Client, path string) error {
 		return fmt.Errorf("failed to unmarshal: %v", err)
 	}
 
-	if action.Cluster != nil {
-		err = createClusterIfNotExist(client, action.Cluster)
+	if action.Framework != nil {
+		err = createFrameworkIfNotExist(client, action.Framework)
 		if err != nil {
 			return err
 		}
 	}
 
-	if action.Framework != nil {
-		err = createFrameworkIfNotExist(client, action.Framework)
+	if action.Cluster != nil {
+		err = createClusterIfNotExist(client, action.Cluster)
 		if err != nil {
 			return err
 		}
