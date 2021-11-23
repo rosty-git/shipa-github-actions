@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -199,7 +200,7 @@ type AppEnv struct {
 
 // CreateAppEnv - request to create AppEnv
 type CreateAppEnv struct {
-	App       string    `yaml:"app"`
+	App       string    `json:"-" yaml:"app"`
 	Envs      []*AppEnv `json:"envs" yaml:"envs"`
 	NoRestart bool      `json:"norestart" yaml:"norestart"`
 	Private   bool      `json:"private" yaml:"private"`
@@ -239,23 +240,39 @@ func (c *Client) DeleteAppEnvs(ctx context.Context, req *CreateAppEnv) error {
 
 // AppCname - represents app cname
 type AppCname struct {
-	Cname   string `json:"cname"`
-	Encrypt bool   `json:"encrypt"`
+	App     string `json:"-" yaml:"app"`
+	Cname   string `json:"cname" yaml:"cname"`
+	Encrypt bool   `json:"encrypt" yaml:"encrypt"`
+}
+
+var pattern = regexp.MustCompile("^https?://")
+
+func (a *AppCname) fixCnameProtocol() {
+	cname := pattern.ReplaceAllString(a.Cname, "")
+
+	if a.Encrypt {
+		a.Cname = fmt.Sprintf("https://%s", cname)
+	} else {
+		a.Cname = fmt.Sprintf("http://%s", cname)
+	}
 }
 
 // CreateAppCname - allows to create app cname
-func (c *Client) CreateAppCname(ctx context.Context, appName string, req *AppCname) error {
-	return c.post(ctx, req, apiAppCname(appName))
+func (c *Client) CreateAppCname(ctx context.Context, req *AppCname) error {
+	req.fixCnameProtocol()
+	return c.post(ctx, req, apiAppCname(req.App))
 }
 
 // UpdateAppCname - allows to update app cname
-func (c *Client) UpdateAppCname(ctx context.Context, appName string, req *AppCname) error {
-	return c.put(ctx, req, apiAppCname(appName))
+func (c *Client) UpdateAppCname(ctx context.Context, req *AppCname) error {
+	req.fixCnameProtocol()
+	return c.put(ctx, req, apiAppCname(req.App))
 }
 
 // DeleteAppCname - deletes app cname
-func (c *Client) DeleteAppCname(ctx context.Context, appName string, req *AppCname) error {
-	return c.deleteWithPayload(ctx, req, nil, apiAppCname(appName))
+func (c *Client) DeleteAppCname(ctx context.Context, req *AppCname) error {
+	req.fixCnameProtocol()
+	return c.deleteWithPayload(ctx, req, nil, apiAppCname(req.App))
 }
 
 // AppDeploy - represents app deploy object

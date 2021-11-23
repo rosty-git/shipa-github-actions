@@ -58,6 +58,7 @@ func readFile(path string) ([]byte, error) {
 type ShipaAction struct {
 	App           *shipa.App           `yaml:"app,omitempty"`
 	AppEnv        *shipa.CreateAppEnv  `yaml:"app-env,omitempty"`
+	AppCname      *shipa.AppCname      `yaml:"app-cname,omitempty"`
 	NetworkPolicy *shipa.NetworkPolicy `yaml:"network-policy,omitempty"`
 	AppDeploy     *shipa.AppDeploy     `yaml:"app-deploy,omitempty"`
 	Framework     *shipa.PoolConfig    `yaml:"framework,omitempty"`
@@ -101,6 +102,13 @@ func createShipaAction(client *shipa.Client, path string) error {
 		err = client.CreateAppEnvs(context.TODO(), action.AppEnv)
 		if err != nil {
 			return fmt.Errorf("failed to create shipa app-env: %v", err)
+		}
+	}
+
+	if action.AppCname != nil {
+		err = client.CreateAppCname(context.TODO(), action.AppCname)
+		if err != nil {
+			return fmt.Errorf("failed to create shipa app-cname: %v", err)
 		}
 	}
 
