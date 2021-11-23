@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"time"
 
@@ -245,33 +244,18 @@ type AppCname struct {
 	Encrypt bool   `json:"encrypt" yaml:"encrypt"`
 }
 
-var pattern = regexp.MustCompile("^https?://")
-
-func (a *AppCname) fixCnameProtocol() {
-	cname := pattern.ReplaceAllString(a.Cname, "")
-
-	if a.Encrypt {
-		a.Cname = fmt.Sprintf("https://%s", cname)
-	} else {
-		a.Cname = fmt.Sprintf("http://%s", cname)
-	}
-}
-
 // CreateAppCname - allows to create app cname
 func (c *Client) CreateAppCname(ctx context.Context, req *AppCname) error {
-	req.fixCnameProtocol()
 	return c.post(ctx, req, apiAppCname(req.App))
 }
 
 // UpdateAppCname - allows to update app cname
 func (c *Client) UpdateAppCname(ctx context.Context, req *AppCname) error {
-	req.fixCnameProtocol()
 	return c.put(ctx, req, apiAppCname(req.App))
 }
 
 // DeleteAppCname - deletes app cname
 func (c *Client) DeleteAppCname(ctx context.Context, req *AppCname) error {
-	req.fixCnameProtocol()
 	return c.deleteWithPayload(ctx, req, nil, apiAppCname(req.App))
 }
 
