@@ -239,15 +239,15 @@ func (c *Client) DeleteAppEnvs(ctx context.Context, req *CreateAppEnv) error {
 
 // AppCname - represents app cname
 type AppCname struct {
-	App     string `json:"-" yaml:"app"`
-	Cname   string `json:"cname" yaml:"cname"`
-	Scheme  string `json:"scheme"`
-	Encrypt bool   `json:"-" yaml:"encrypt"`
+	App       string `json:"-" yaml:"app"`
+	Cname     string `json:"cname" yaml:"cname"`
+	Scheme    string `json:"scheme"`
+	Encrypted bool   `json:"-" yaml:"encrypted"`
 }
 
 func (a *AppCname) setScheme() {
 	a.Scheme = "http"
-	if a.Encrypt {
+	if a.Encrypted {
 		a.Scheme = "https"
 	}
 }
