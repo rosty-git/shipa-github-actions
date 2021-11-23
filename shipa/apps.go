@@ -241,21 +241,32 @@ func (c *Client) DeleteAppEnvs(ctx context.Context, req *CreateAppEnv) error {
 type AppCname struct {
 	App     string `json:"-" yaml:"app"`
 	Cname   string `json:"cname" yaml:"cname"`
-	Encrypt bool   `json:"encrypt" yaml:"encrypt"`
+	Scheme  string `json:"scheme"`
+	Encrypt bool   `json:"-" yaml:"encrypt"`
+}
+
+func (a *AppCname) setScheme() {
+	a.Scheme = "http"
+	if a.Encrypt {
+		a.Scheme = "https"
+	}
 }
 
 // CreateAppCname - allows to create app cname
 func (c *Client) CreateAppCname(ctx context.Context, req *AppCname) error {
+	req.setScheme()
 	return c.post(ctx, req, apiAppCname(req.App))
 }
 
 // UpdateAppCname - allows to update app cname
 func (c *Client) UpdateAppCname(ctx context.Context, req *AppCname) error {
+	req.setScheme()
 	return c.put(ctx, req, apiAppCname(req.App))
 }
 
 // DeleteAppCname - deletes app cname
 func (c *Client) DeleteAppCname(ctx context.Context, req *AppCname) error {
+	req.setScheme()
 	return c.deleteWithPayload(ctx, req, nil, apiAppCname(req.App))
 }
 
