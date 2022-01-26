@@ -30,26 +30,60 @@ type PoolAutoScale struct {
 
 // PoolGeneral - pool general configuration
 type PoolGeneral struct {
-	Setup           *PoolSetup           `json:"setup,omitempty" yaml:"setup,omitempty"`
-	Plan            *PoolPlan            `json:"plan,omitempty" yaml:"plan,omitempty"`
-	Security        *PoolSecurity        `json:"security,omitempty" yaml:"security,omitempty"`
-	Access          *PoolServiceAccess   `json:"access,omitempty" yaml:"access,omitempty"`
-	Services        *PoolServiceAccess   `json:"services,omitempty" yaml:"services,omitempty"`
-	Router          string               `json:"router,omitempty" yaml:"router,omitempty"`
-	Volumes         []string             `json:"volumes,omitempty" yaml:"volumes,omitempty"`
-	AppQuota        *PoolAppQuota        `json:"appQuota,omitempty" yaml:"appQuota,omitempty"`
-	ContainerPolicy *PoolContainerPolicy `json:"containerPolicy,omitempty" yaml:"containerPolicy,omitempty"`
-	NetworkPolicy   *PoolNetworkPolicy   `json:"networkPolicy,omitempty" yaml:"networkPolicy,omitempty"`
+	Setup            *PoolSetup           `json:"setup,omitempty" yaml:"setup,omitempty"`
+	Plan             *PoolPlan            `json:"plan,omitempty" yaml:"plan,omitempty"`
+	Security         *PoolSecurity        `json:"security,omitempty" yaml:"security,omitempty"`
+	Access           *PoolServiceAccess   `json:"access,omitempty" yaml:"access,omitempty"`
+	Services         *PoolServiceAccess   `json:"services,omitempty" yaml:"services,omitempty"`
+	Router           string               `json:"router,omitempty" yaml:"router,omitempty"`
+	Volumes          []string             `json:"volumes,omitempty" yaml:"volumes,omitempty"`
+	ContainerPolicy  *PoolContainerPolicy `json:"containerPolicy,omitempty" yaml:"containerPolicy,omitempty"`
+	NodeSelectors    *NodeSelectors       `json:"nodeSelectors,omitempty"`
+	PodAutoScaler    *PodAutoScaler       `json:"podAutoScaler,omitempty"`
+	DomainPolicy     *DomainPolicy        `json:"domainPolicy,omitempty"`
+	AppAutoDiscovery *AppAutoDiscovery    `json:"appAutoDiscovery,omitempty"`
+	NetworkPolicy    *PoolNetworkPolicy   `json:"networkPolicy,omitempty" yaml:"networkPolicy,omitempty"`
+}
+
+// AppAutoDiscovery - part of PoolGeneral object
+type AppAutoDiscovery struct {
+	AppSelector []*AppSelectorLabels `json:"appSelector,omitempty"`
+	Suffix      string               `json:"suffix"`
+}
+
+// AppSelectorLabels - part of AppAutoDiscovery object
+type AppSelectorLabels struct {
+	Label string `json:"label,omitempty"`
+}
+
+// DomainPolicy - part of PoolGeneral object
+type DomainPolicy struct {
+	AllowedCnames []string `json:"allowedCnames,omitempty"`
+}
+
+// PodAutoScaler - part of PoolGeneral object
+type PodAutoScaler struct {
+	MinReplicas                    int  `json:"minReplicas"`
+	MaxReplicas                    int  `json:"maxReplicas"`
+	TargetCPUUtilizationPercentage int  `json:"targetCPUUtilizationPercentage"`
+	DisableAppOverride             bool `json:"disableAppOverride"`
+}
+
+// NodeSelectors - part of PoolGeneral object
+type NodeSelectors struct {
+	Terms  *NodeSelectorsTerms `json:"terms,omitempty"`
+	Strict bool                `json:"strict"`
+}
+
+// NodeSelectorsTerms - part of NodeSelectors object
+type NodeSelectorsTerms struct {
+	Environment string `json:"environment,omitempty"`
+	OS          string `json:"os,omitempty"`
 }
 
 // PoolContainerPolicy - part of PoolGeneral object
 type PoolContainerPolicy struct {
 	AllowedHosts []string `json:"allowedHosts,omitempty" yaml:"allowedHosts,omitempty"`
-}
-
-// PoolAppQuota - part of PoolGeneral object
-type PoolAppQuota struct {
-	Limit string `json:"limit,omitempty" yaml:"limit,omitempty"`
 }
 
 // PoolServiceAccess - part of PoolGeneral object
@@ -96,13 +130,13 @@ type NetworkPolicyConfig struct {
 
 // NetworkPolicyRule - part of NetworkPolicy
 type NetworkPolicyRule struct {
-	ID                string         `json:"id,omitempty" yaml:"id,omitempty"`
-	Enabled           bool           `json:"enabled" yaml:"enabled"`
-	Description       string         `json:"description,omitempty" yaml:"description,omitempty"`
-	Ports             []*NetworkPort `json:"ports,omitempty" yaml:"ports,omitempty"`
-	Peers             []*NetworkPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
-	AllowedApps       []string       `json:"allowed_apps,omitempty" yaml:"allowed_apps,omitempty"`
-	AllowedPools      []string       `json:"allowed_pools,omitempty" yaml:"allowed_frameworks,omitempty"`
+	ID           string         `json:"id,omitempty" yaml:"id,omitempty"`
+	Enabled      bool           `json:"enabled" yaml:"enabled"`
+	Description  string         `json:"description,omitempty" yaml:"description,omitempty"`
+	Ports        []*NetworkPort `json:"ports,omitempty" yaml:"ports,omitempty"`
+	Peers        []*NetworkPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
+	AllowedApps  []string       `json:"allowed_apps,omitempty" yaml:"allowed_apps,omitempty"`
+	AllowedPools []string       `json:"allowed_pools,omitempty" yaml:"allowed_frameworks,omitempty"`
 }
 
 // NetworkPort - part of NetworkPolicyRule

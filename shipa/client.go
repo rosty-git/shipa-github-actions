@@ -19,7 +19,7 @@ import (
 // API endpoints
 const (
 	apiClusters    = "provisioner/clusters"
-	apiPoolsConfig = "pools-config"
+	apiPoolsConfig = "frameworks-config"
 	apiPools       = "pools"
 	apiApps        = "apps"
 	apiUsers       = "users"
