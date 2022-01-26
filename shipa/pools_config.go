@@ -38,47 +38,47 @@ type PoolGeneral struct {
 	Router           string               `json:"router,omitempty" yaml:"router,omitempty"`
 	Volumes          []string             `json:"volumes,omitempty" yaml:"volumes,omitempty"`
 	ContainerPolicy  *PoolContainerPolicy `json:"containerPolicy,omitempty" yaml:"containerPolicy,omitempty"`
-	NodeSelectors    *NodeSelectors       `json:"nodeSelectors,omitempty"`
-	PodAutoScaler    *PodAutoScaler       `json:"podAutoScaler,omitempty"`
-	DomainPolicy     *DomainPolicy        `json:"domainPolicy,omitempty"`
-	AppAutoDiscovery *AppAutoDiscovery    `json:"appAutoDiscovery,omitempty"`
+	NodeSelectors    *NodeSelectors       `json:"nodeSelectors,omitempty" yaml:"nodeSelectors,omitempty"`
+	PodAutoScaler    *PodAutoScaler       `json:"podAutoScaler,omitempty" yaml:"podAutoScaler,omitempty"`
+	DomainPolicy     *DomainPolicy        `json:"domainPolicy,omitempty" yaml:"domainPolicy,omitempty"`
+	AppAutoDiscovery *AppAutoDiscovery    `json:"appAutoDiscovery,omitempty" yaml:"appAutoDiscovery,omitempty"`
 	NetworkPolicy    *PoolNetworkPolicy   `json:"networkPolicy,omitempty" yaml:"networkPolicy,omitempty"`
 }
 
 // AppAutoDiscovery - part of PoolGeneral object
 type AppAutoDiscovery struct {
-	AppSelector []*AppSelectorLabels `json:"appSelector,omitempty"`
-	Suffix      string               `json:"suffix"`
+	AppSelector []*AppSelectorLabels `json:"appSelector,omitempty" yaml:"appSelector,omitempty"`
+	Suffix      string               `json:"suffix,omitempty" yaml:"suffix,omitempty"`
 }
 
 // AppSelectorLabels - part of AppAutoDiscovery object
 type AppSelectorLabels struct {
-	Label string `json:"label,omitempty"`
+	Label string `json:"label,omitempty" yaml:"label,omitempty"`
 }
 
 // DomainPolicy - part of PoolGeneral object
 type DomainPolicy struct {
-	AllowedCnames []string `json:"allowedCnames,omitempty"`
+	AllowedCnames []string `json:"allowedCnames,omitempty" yaml:"allowedCnames,omitempty"`
 }
 
 // PodAutoScaler - part of PoolGeneral object
 type PodAutoScaler struct {
-	MinReplicas                    int  `json:"minReplicas"`
-	MaxReplicas                    int  `json:"maxReplicas"`
-	TargetCPUUtilizationPercentage int  `json:"targetCPUUtilizationPercentage"`
-	DisableAppOverride             bool `json:"disableAppOverride"`
+	MinReplicas                    int  `json:"minReplicas" yaml:"minReplicas"`
+	MaxReplicas                    int  `json:"maxReplicas" yaml:"maxReplicas"`
+	TargetCPUUtilizationPercentage int  `json:"targetCPUUtilizationPercentage" yaml:"targetCPUUtilizationPercentage"`
+	DisableAppOverride             bool `json:"disableAppOverride" yaml:"disableAppOverride"`
 }
 
 // NodeSelectors - part of PoolGeneral object
 type NodeSelectors struct {
-	Terms  *NodeSelectorsTerms `json:"terms,omitempty"`
-	Strict bool                `json:"strict"`
+	Terms  *NodeSelectorsTerms `json:"terms,omitempty" yaml:"terms,omitempty"`
+	Strict bool                `json:"strict" yaml:"strict"`
 }
 
 // NodeSelectorsTerms - part of NodeSelectors object
 type NodeSelectorsTerms struct {
-	Environment string `json:"environment,omitempty"`
-	OS          string `json:"os,omitempty"`
+	Environment string `json:"environment,omitempty" yaml:"environment,omitempty"`
+	OS          string `json:"os,omitempty" yaml:"os,omitempty"`
 }
 
 // PoolContainerPolicy - part of PoolGeneral object
