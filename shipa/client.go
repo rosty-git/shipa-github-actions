@@ -344,6 +344,15 @@ func (c *Client) postURLEncoded(ctx context.Context, params map[string]string, u
 	if statusCode != http.StatusAccepted && statusCode != http.StatusCreated && statusCode != http.StatusOK {
 		return ErrStatus(statusCode, body)
 	}
+
+	if bytes.Contains(body, []byte("There are vulnerabilities!")) {
+		return errors.New("found vulnerabilities")
+	}
+
+	if bytes.Contains(bytes.ToLower(body), []byte(`"error"`)) {
+		return fmt.Errorf("app deploy failed, body: %s", body)
+	}
+
 	return nil
 }
 
