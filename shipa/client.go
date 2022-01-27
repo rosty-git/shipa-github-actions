@@ -287,6 +287,47 @@ func (c *Client) post(ctx context.Context, payload interface{}, urlPath ...strin
 	if statusCode != http.StatusCreated && statusCode != http.StatusOK {
 		return ErrStatus(statusCode, body)
 	}
+
+	return parseError(body)
+}
+
+type replyMsg struct {
+	Message string
+	Error   string
+}
+
+func parseError(body []byte) error {
+	msgs := bytes.Split(body, []byte("\n"))
+	if len(msgs) == 0 {
+		return nil
+	}
+
+	msg := getLastMessage(msgs)
+	if msg == nil || len(msg) == 0 {
+		return nil
+	}
+
+	var m replyMsg
+	err := json.Unmarshal(msg, &m)
+	if err != nil {
+		// failed to unmarshal, probably there is different payload
+		return nil
+	}
+
+	if m.Error == "" {
+		return nil
+	}
+
+	return errors.New(m.Error)
+}
+
+func getLastMessage(msgs [][]byte) []byte {
+	for i := len(msgs) - 1; i >= 0; i-- {
+		if len(msgs[i]) > 0 {
+			return msgs[i]
+		}
+	}
+
 	return nil
 }
 
