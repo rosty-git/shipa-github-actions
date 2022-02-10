@@ -56,13 +56,14 @@ func readFile(path string) ([]byte, error) {
 }
 
 type ShipaAction struct {
-	App           *shipa.App           `yaml:"app,omitempty"`
-	AppEnv        *shipa.CreateAppEnv  `yaml:"app-env,omitempty"`
-	AppCname      *shipa.AppCname      `yaml:"app-cname,omitempty"`
-	NetworkPolicy *shipa.NetworkPolicy `yaml:"network-policy,omitempty"`
-	AppDeploy     *shipa.AppDeploy     `yaml:"app-deploy,omitempty"`
-	Framework     *shipa.PoolConfig    `yaml:"framework,omitempty"`
-	Cluster       *types.Cluster       `yaml:"cluster,omitempty"`
+	App           *shipa.App              `yaml:"app,omitempty"`
+	AppEnv        *shipa.CreateAppEnv     `yaml:"app-env,omitempty"`
+	AppCname      *shipa.AppCname         `yaml:"app-cname,omitempty"`
+	NetworkPolicy *shipa.NetworkPolicy    `yaml:"network-policy,omitempty"`
+	AppDeploy     *shipa.AppDeploy        `yaml:"app-deploy,omitempty"`
+	Framework     *shipa.PoolConfig       `yaml:"framework,omitempty"`
+	Cluster       *types.Cluster          `yaml:"cluster,omitempty"`
+	Job           *shipa.JobCreateRequest `yaml:"job,omitempty"`
 }
 
 func createShipaAction(client *shipa.Client, path string) error {
@@ -126,7 +127,30 @@ func createShipaAction(client *shipa.Client, path string) error {
 		}
 	}
 
+	if action.Job != nil {
+		err = createJobIfNotExist(client, action.Job)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
+}
+
+func createJobIfNotExist(client *shipa.Client, job *shipa.JobCreateRequest) error {
+	jobs, err := client.ListJobs(context.TODO())
+	if err != nil {
+		return err
+	}
+
+	for _, j := range jobs {
+		if j.Name == job.Name {
+			return nil
+		}
+	}
+
+	_, err = client.CreateJob(context.TODO(), job)
+	return err
 }
 
 func createFrameworkIfNotExist(client *shipa.Client, framework *shipa.PoolConfig) error {

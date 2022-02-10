@@ -28,6 +28,7 @@ const (
 	apiRoles       = "roles"
 	apiVolumes     = "volumes"
 	apiVolumePlans = "volume-plans"
+	apiJobs        = "jobs"
 )
 
 func apiAppNetworkPolicy(appName string) string {
@@ -289,6 +290,19 @@ func (c *Client) post(ctx context.Context, payload interface{}, urlPath ...strin
 	}
 
 	return parseError(body)
+}
+
+func (c *Client) postWithResult(ctx context.Context, payload interface{}, urlPath ...string) ([]byte, error) {
+	body, statusCode, err := c.updateRequest(ctx, "POST", payload, urlPath...)
+	if err != nil {
+		return nil, err
+	}
+
+	if statusCode != http.StatusCreated && statusCode != http.StatusOK {
+		return nil, ErrStatus(statusCode, body)
+	}
+
+	return body, parseError(body)
 }
 
 type replyMsg struct {
