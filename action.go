@@ -56,7 +56,7 @@ func readFile(path string) ([]byte, error) {
 }
 
 type ShipaAction struct {
-	App           *shipa.App              `yaml:"app,omitempty"`
+	App           *shipa.CreateAppRequest `yaml:"app,omitempty"`
 	AppEnv        *shipa.CreateAppEnv     `yaml:"app-env,omitempty"`
 	AppCname      *shipa.AppCname         `yaml:"app-cname,omitempty"`
 	NetworkPolicy *shipa.NetworkPolicy    `yaml:"network-policy,omitempty"`
@@ -165,7 +165,7 @@ func createFrameworkIfNotExist(client *shipa.Client, framework *shipa.PoolConfig
 	return nil
 }
 
-func createAppIfNotExist(client *shipa.Client, app *shipa.App) error {
+func createAppIfNotExist(client *shipa.Client, app *shipa.CreateAppRequest) error {
 	_, err := client.GetApp(context.TODO(), app.Name)
 	if err != nil {
 		// app does not exist

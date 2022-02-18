@@ -11,6 +11,15 @@ import (
 	"github.com/pkg/errors"
 )
 
+// CreateAppRequest - request to create an App
+type CreateAppRequest struct {
+	Name      string   `json:"name" yaml:"name,omitempty"`
+	Pool      string   `json:"pool,omitempty" yaml:"framework,omitempty"`
+	TeamOwner string   `json:"teamOwner,omitempty" yaml:"teamOwner,omitempty"`
+	Plan      string   `json:"plan,omitempty" yaml:"plan,omitempty"`
+	Tags      []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+}
+
 // UpdateAppRequest - request for App update
 type UpdateAppRequest struct {
 	Pool        string   `json:"pool,omitempty"`
@@ -177,7 +186,7 @@ func (c *Client) GetApp(ctx context.Context, name string) (*App, error) {
 }
 
 // CreateApp - creates app
-func (c *Client) CreateApp(ctx context.Context, app *App) error {
+func (c *Client) CreateApp(ctx context.Context, app *CreateAppRequest) error {
 	return c.post(ctx, app, apiApps)
 }
 
@@ -186,7 +195,7 @@ func (c *Client) UpdateApp(ctx context.Context, name string, app *UpdateAppReque
 	return c.put(ctx, app, apiApps, name)
 }
 
-// DeleteApp - delets app
+// DeleteApp - deletes app
 func (c *Client) DeleteApp(ctx context.Context, name string) error {
 	return c.delete(ctx, apiApps, name)
 }
