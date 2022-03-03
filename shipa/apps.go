@@ -1,9 +1,11 @@
 package shipa
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -273,9 +275,14 @@ func (c *Client) UpdateAppCname(ctx context.Context, req *AppCname) error {
 	return c.put(ctx, req, apiAppCname(req.App))
 }
 
+// DeleteCnameRequest - request payload to delete cname
+type DeleteCnameRequest struct {
+	App   string
+	Cname []string `json:"cnames"`
+}
+
 // DeleteAppCname - deletes app cname
-func (c *Client) DeleteAppCname(ctx context.Context, req *AppCname) error {
-	req.setScheme()
+func (c *Client) DeleteAppCname(ctx context.Context, req *DeleteCnameRequest) error {
 	return c.deleteWithPayload(ctx, req, nil, apiAppCname(req.App))
 }
 
@@ -339,7 +346,26 @@ func (c *Client) DeployApp(ctx context.Context, req *AppDeploy) error {
 		params["shipayaml"] = yamlContent
 	}
 
-	return c.postURLEncoded(ctx, params, apiAppDeploy(req.App))
+	body, statusCode, err := c.updateRequest(ctx, "POST", params, apiAppDeploy(req.App))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("### Deploy app RESP:", string(body))
+
+	if statusCode != http.StatusAccepted && statusCode != http.StatusCreated && statusCode != http.StatusOK {
+		return ErrStatus(statusCode, body)
+	}
+
+	if bytes.Contains(body, []byte("There are vulnerabilities!")) {
+		return errors.New("found vulnerabilities")
+	}
+
+	if bytes.Contains(bytes.ToLower(body), []byte(`"error"`)) {
+		return fmt.Errorf("app deploy failed, body: %s", body)
+	}
+
+	return nil
 }
 
 func getShipaYamlBase64Enc(path string) (string, error) {

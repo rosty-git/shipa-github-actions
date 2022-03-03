@@ -428,6 +428,7 @@ func (c *Client) deleteWithPayload(ctx context.Context, payload interface{}, par
 		return err
 	}
 
+	req.Header.Set("Content-Type", "application/json")
 	body, statusCode, err := c.doRequest(req)
 	if err != nil {
 		return err
