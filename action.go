@@ -121,6 +121,7 @@ func createShipaAction(client *shipa.Client, path string) error {
 	}
 
 	if action.AppDeploy != nil {
+		action.AppDeploy.SetDefaults()
 		err = client.DeployApp(context.TODO(), action.AppDeploy)
 		if err != nil {
 			return fmt.Errorf("failed to deploy shipa app: %v", err)
